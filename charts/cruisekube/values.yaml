@@ -8,8 +8,12 @@ global:
       port: 5432
       ## @param global.postgresql.auth.username PostgreSQL username
       username: "cruisekube"
-      ## @param global.postgresql.auth.password PostgreSQL password
+      ## @param global.postgresql.auth.password PostgreSQL password used when postgresql.enabled is true (bundled quickstart database) or as a plaintext fallback for an external database. Ignored when existingSecret or tls is set below -- explicitly set this to "" when using either, so the plaintext value is never rendered alongside them.
       password: "cruisekube"
+      ## @param global.postgresql.auth.existingSecret Existing Secret {name, passwordKey} holding the PostgreSQL password for an external database. Takes precedence over the plaintext password above.
+      existingSecret: {}
+      ## @param global.postgresql.auth.tls Client-certificate (mTLS) authentication for an external database, as an alternative to a password: {existingSecret (Secret name), certKey (default tls.crt), keyKey (default tls.key), caCertKey (optional), mountPath (default /etc/cruisekube/db-tls)}. The certificate's subject authenticates the connection (pg_hba.conf "cert" method); no password is sent.
+      tls: {}
       ## @param global.postgresql.auth.database PostgreSQL database name
       database: "cruisekube"
 ## @section CruiseKube Controller parameters

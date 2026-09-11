@@ -17,8 +17,13 @@ type FactoryConfig struct {
 	Port     int    `yaml:"port" json:"port"`         // For postgres
 	Database string `yaml:"database" json:"database"` // Database name or file path
 	Username string `yaml:"username" json:"username"` // For postgres
-	Password string `yaml:"password" json:"password"` // For postgres
+	Password string `yaml:"password" json:"password"` // For postgres, mutually exclusive with SSLCert/SSLKey
 	SSLMode  string `yaml:"sslmode" json:"sslmode"`   // For postgres
+	// Client-certificate (mTLS) authentication, as an alternative to a
+	// static Password. See postgres.go for how these combine into the DSN.
+	SSLCert     string `yaml:"sslcert" json:"sslcert"`
+	SSLKey      string `yaml:"sslkey" json:"sslkey"`
+	SSLRootCert string `yaml:"sslrootcert" json:"sslrootcert"`
 }
 
 // ClientFactory defines the interface for creating database clients

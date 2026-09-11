@@ -117,13 +117,16 @@ func buildControllerRuntime(runtimeManager *runtimeManager, cfg *config.Config) 
 
 func initDatabaseAdapter(runtimeManager *runtimeManager, cfg *config.Config) (ports.Database, error) {
 	dbCfg := database.DatabaseConfig{
-		Type:     cfg.DB.Type,
-		Host:     cfg.DB.Host,
-		Port:     cfg.DB.Port,
-		Database: cfg.DB.Database,
-		Username: cfg.DB.Username,
-		Password: cfg.DB.Password,
-		SSLMode:  cfg.DB.SSLMode,
+		Type:        cfg.DB.Type,
+		Host:        cfg.DB.Host,
+		Port:        cfg.DB.Port,
+		Database:    cfg.DB.Database,
+		Username:    cfg.DB.Username,
+		Password:    cfg.DB.Password,
+		SSLMode:     cfg.DB.SSLMode,
+		SSLCert:     cfg.DB.SSLCert,
+		SSLKey:      cfg.DB.SSLKey,
+		SSLRootCert: cfg.DB.SSLRootCert,
 	}
 
 	databaseAdapter, err := backoff.Retry(
