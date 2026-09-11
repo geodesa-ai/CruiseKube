@@ -95,8 +95,15 @@ type DatabaseConfig struct {
 	Port     int    `yaml:"port" json:"port"`         // For postgres
 	Database string `yaml:"database" json:"database"` // Database name or file path
 	Username string `yaml:"username" json:"username"` // For postgres
-	Password string `yaml:"password" json:"password"` // For postgres
+	Password string `yaml:"password" json:"password"` // For postgres, mutually exclusive with SSLCert/SSLKey
 	SSLMode  string `yaml:"sslmode" json:"sslmode"`   // For postgres
+	// Client-certificate (mTLS) authentication, as an alternative to a
+	// static Password. All three paths must be set together. When set,
+	// Postgres authenticates the connection by the certificate's subject
+	// (pg_hba.conf "cert" method) rather than a password.
+	SSLCert     string `yaml:"sslcert" json:"sslcert"`         // Path to the client certificate file
+	SSLKey      string `yaml:"sslkey" json:"sslkey"`           // Path to the client private key file
+	SSLRootCert string `yaml:"sslrootcert" json:"sslrootcert"` // Path to the CA certificate used to verify the server
 }
 
 type RecommendationSettings struct {

@@ -22,21 +22,29 @@ type DatabaseConfig struct {
 	Port     int    `yaml:"port" json:"port"`         // For postgres
 	Database string `yaml:"database" json:"database"` // Database name or file path
 	Username string `yaml:"username" json:"username"` // For postgres
-	Password string `yaml:"password" json:"password"` // For postgres
+	Password string `yaml:"password" json:"password"` // For postgres, mutually exclusive with SSLCert/SSLKey
 	SSLMode  string `yaml:"sslmode" json:"sslmode"`   // For postgres
+	// Client-certificate (mTLS) authentication, as an alternative to a
+	// static Password. See clients/postgres.go for how these combine.
+	SSLCert     string `yaml:"sslcert" json:"sslcert"`
+	SSLKey      string `yaml:"sslkey" json:"sslkey"`
+	SSLRootCert string `yaml:"sslrootcert" json:"sslrootcert"`
 }
 
 // NewDatabase creates a new storage instance based on the configuration
 func NewDatabase(config DatabaseConfig) (ports.Database, error) {
 	// Create the appropriate client factory
 	clientFactory, err := clients.CreateClientFactory(clients.FactoryConfig{
-		Type:     config.Type,
-		Host:     config.Host,
-		Port:     config.Port,
-		Database: config.Database,
-		Username: config.Username,
-		Password: config.Password,
-		SSLMode:  config.SSLMode,
+		Type:        config.Type,
+		Host:        config.Host,
+		Port:        config.Port,
+		Database:    config.Database,
+		Username:    config.Username,
+		Password:    config.Password,
+		SSLMode:     config.SSLMode,
+		SSLCert:     config.SSLCert,
+		SSLKey:      config.SSLKey,
+		SSLRootCert: config.SSLRootCert,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client factory: %w", err)
