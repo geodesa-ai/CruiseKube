@@ -32,7 +32,7 @@ spec:
       serviceAccountName: {{ include "cruisekubeController.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}-controller
-          image: "{{ .Values.cruisekubeController.image.repository }}:{{ include "cruisekubeController.imageTag" . }}"
+          image: "{{ .Values.cruisekubeController.image.repository }}{{ if .Values.cruisekubeController.image.digest }}@{{ .Values.cruisekubeController.image.digest }}{{ else }}:{{ include "cruisekubeController.imageTag" . }}{{ end }}"
           imagePullPolicy: {{ .Values.cruisekubeController.image.imagePullPolicy }}
           command: ["./cruisekube"]
           args:

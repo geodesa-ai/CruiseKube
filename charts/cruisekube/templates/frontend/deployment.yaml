@@ -28,7 +28,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-frontend
-          image: "{{ .Values.cruisekubeFrontend.image.repository }}:{{ include "cruisekubeFrontend.imageTag" . }}"
+          image: "{{ .Values.cruisekubeFrontend.image.repository }}{{ if .Values.cruisekubeFrontend.image.digest }}@{{ .Values.cruisekubeFrontend.image.digest }}{{ else }}:{{ include "cruisekubeFrontend.imageTag" . }}{{ end }}"
           imagePullPolicy: {{ .Values.cruisekubeFrontend.image.imagePullPolicy }}
           ports:
             - name: http
