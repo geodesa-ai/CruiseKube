@@ -80,14 +80,14 @@ spec:
               value: {{ .Values.global.postgresql.auth.database | quote }}
             {{- end }}
             {{- with .Values.global.postgresql.auth.tls }}
-            {{- if .existingSecret }}
+            {{- if .volume }}
             - name: CRUISEKUBE_DB_SSLCERT
-              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .certKey | default "tls.crt" }}"
+              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .certFile | default "tls.crt" }}"
             - name: CRUISEKUBE_DB_SSLKEY
-              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .keyKey | default "tls.key" }}"
-            {{- if .caCertKey }}
+              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .keyFile | default "tls.key" }}"
+            {{- if .caFile }}
             - name: CRUISEKUBE_DB_SSLROOTCERT
-              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .caCertKey }}"
+              value: "{{ .mountPath | default "/etc/cruisekube/db-tls" }}/{{ .caFile }}"
             {{- end }}
             {{- end }}
             {{- end }}
@@ -129,7 +129,7 @@ spec:
             {{- end }}
           volumeMounts:
             {{- with .Values.global.postgresql.auth.tls }}
-            {{- if .existingSecret }}
+            {{- if .volume }}
             - name: db-tls
               mountPath: {{ .mountPath | default "/etc/cruisekube/db-tls" }}
               readOnly: true
@@ -139,12 +139,10 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
       {{- with .Values.global.postgresql.auth.tls }}
-      {{- if .existingSecret }}
+      {{- if .volume }}
       volumes:
         - name: db-tls
-          secret:
-            secretName: {{ .existingSecret }}
-            defaultMode: 0400
+          {{- toYaml .volume | nindent 10 }}
       {{- end }}
       {{- end }}
 {{- end }}

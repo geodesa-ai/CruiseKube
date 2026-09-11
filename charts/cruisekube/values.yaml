@@ -12,7 +12,7 @@ global:
       password: "cruisekube"
       ## @param global.postgresql.auth.existingSecret Existing Secret {name, passwordKey} holding the PostgreSQL password for an external database. Takes precedence over the plaintext password above.
       existingSecret: {}
-      ## @param global.postgresql.auth.tls Client-certificate (mTLS) authentication for an external database, as an alternative to a password: {existingSecret (Secret name), certKey (default tls.crt), keyKey (default tls.key), caCertKey (optional), mountPath (default /etc/cruisekube/db-tls)}. The certificate's subject authenticates the connection (pg_hba.conf "cert" method); no password is sent.
+      ## @param global.postgresql.auth.tls Client-certificate (mTLS) authentication for an external database, as an alternative to a password: {volume (any raw Kubernetes volume spec providing the cert/key/CA files -- a Secret, or a cert-manager CSI ephemeral volume for auto-rotating certificates), certFile (default tls.crt), keyFile (default tls.key), caFile (optional), mountPath (default /etc/cruisekube/db-tls)}. The certificate's subject authenticates the connection (pg_hba.conf "cert" method); no password is sent.
       tls: {}
       ## @param global.postgresql.auth.database PostgreSQL database name
       database: "cruisekube"
