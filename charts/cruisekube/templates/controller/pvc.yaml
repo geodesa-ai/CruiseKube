@@ -1,0 +1,17 @@
+{{- if and .Values.cruisekubeController.enabled .Values.cruisekubeController.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cruisekubeController.fullname" . }}-data
+  labels:
+    {{- include "cruisekubeController.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- with .Values.cruisekubeController.persistence.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.cruisekubeController.persistence.size }}
+{{- end }}

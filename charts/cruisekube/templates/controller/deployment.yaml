@@ -1,4 +1,7 @@
 {{- if .Values.cruisekubeController.enabled }}
+{{- if and .Values.cruisekubeController.persistence.enabled (gt (int .Values.cruisekubeController.replicas) 1) }}
+{{- fail "cruisekubeController.persistence.enabled requires cruisekubeController.replicas: 1 (SQLite is single-writer)" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,6 +55,7 @@ spec:
           resources:
             {{- toYaml .Values.cruisekubeController.resources | nindent 12 }}
           env:
+            {{- if not .Values.cruisekubeController.persistence.enabled }}
             {{- if .Values.global.postgresql.auth }}
             {{- if .Values.global.postgresql.auth.host }}
             - name: CRUISEKUBE_DB_HOST
@@ -92,6 +96,7 @@ spec:
             {{- end }}
             {{- end }}
             {{- end }}
+            {{- end }}
             {{- range $key, $value := .Values.cruisekubeController.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -128,6 +133,10 @@ spec:
               value: {{ .Chart.AppVersion | quote }}
             {{- end }}
           volumeMounts:
+            {{- if .Values.cruisekubeController.persistence.enabled }}
+            - name: data
+              mountPath: {{ .Values.cruisekubeController.persistence.mountPath | default "/app/data" }}
+            {{- end }}
             {{- with .Values.global.postgresql.auth.tls }}
             {{- if .volume }}
             - name: db-tls
@@ -138,11 +147,19 @@ spec:
             {{- with .Values.cruisekubeController.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-      {{- with .Values.global.postgresql.auth.tls }}
-      {{- if .volume }}
+      {{- $needsCustomVolumes := or .Values.cruisekubeController.persistence.enabled .Values.global.postgresql.auth.tls.volume }}
+      {{- if $needsCustomVolumes }}
       volumes:
+        {{- if .Values.cruisekubeController.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "cruisekubeController.fullname" . }}-data
+        {{- end }}
+        {{- with .Values.global.postgresql.auth.tls }}
+        {{- if .volume }}
         - name: db-tls
           {{- toYaml .volume | nindent 10 }}
-      {{- end }}
+        {{- end }}
+        {{- end }}
       {{- end }}
 {{- end }}

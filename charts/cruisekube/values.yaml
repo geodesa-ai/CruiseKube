@@ -76,6 +76,12 @@ cruisekubeController:
   controller:
     ## @param cruisekubeController.controller.mode Controller mode (inCluster or external)
     mode: "in-cluster"
+  ## @param cruisekubeController.persistence SQLite-on-PVC mode: {enabled, storageClass, size, mountPath (default /app/data)}. When enabled, the controller uses its built-in SQLite backend against a PVC instead of Postgres -- global.postgresql.auth and the bundled postgresql subchart are ignored. Requires replicas: 1 (SQLite is single-writer). Appropriate for CruiseKube's own short-retention, disposable recommendation data; not a general-purpose HA database.
+  persistence:
+    enabled: false
+    storageClass: ""
+    size: 1Gi
+    mountPath: /app/data
   serviceAccount:
     ## @param cruisekubeController.serviceAccount.create Specifies whether a ServiceAccount should be created
     create: true
