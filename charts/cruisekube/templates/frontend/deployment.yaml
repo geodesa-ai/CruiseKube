@@ -26,10 +26,21 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Chart.Name }}-frontend
           image: "{{ .Values.cruisekubeFrontend.image.repository }}{{ if .Values.cruisekubeFrontend.image.digest }}@{{ .Values.cruisekubeFrontend.image.digest }}{{ else }}:{{ include "cruisekubeFrontend.imageTag" . }}{{ end }}"
           imagePullPolicy: {{ .Values.cruisekubeFrontend.image.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: 3000

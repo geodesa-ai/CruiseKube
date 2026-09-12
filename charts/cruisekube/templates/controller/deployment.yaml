@@ -30,6 +30,12 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "cruisekubeController.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: {{ .Chart.Name }}-controller
           image: "{{ .Values.cruisekubeController.image.repository }}{{ if .Values.cruisekubeController.image.digest }}@{{ .Values.cruisekubeController.image.digest }}{{ else }}:{{ include "cruisekubeController.imageTag" . }}{{ end }}"
@@ -38,6 +44,11 @@ spec:
           args:
             - "--execution-mode=controller"
             - "--controller-mode={{ .Values.cruisekubeController.controller.mode }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: {{ .Values.cruisekubeController.service.httpPort }}
