@@ -26,6 +26,8 @@ spec:
         runAsNonRoot: true
         runAsUser: 2000
         fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: cert-gen
         image: {{ .Values.cruisekubeWebhook.certGen.image.repository }}:{{ .Values.cruisekubeWebhook.certGen.image.tag }}
